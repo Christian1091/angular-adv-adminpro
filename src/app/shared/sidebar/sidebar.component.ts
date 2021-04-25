@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Usuario } from 'src/app/models/usuario.model';
+import { UsuarioService } from 'src/app/services/usuario.service';
 
 import { SidebarService } from '../../services/sidebar.service'
 
@@ -8,16 +10,24 @@ import { SidebarService } from '../../services/sidebar.service'
   styles: [
   ]
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
 
-  menuItems: any[];
+  /**
+   * Instanciamos nuestro modelo para llamar a nuestros atributos
+   * en este caso la imagen y el nombre en el html
+   */
+  public usuario: Usuario;
+  public menuItems: any[];
 
-  constructor( private sidebaService: SidebarService) {
+  constructor( private sidebaService: SidebarService,
+               private usuarioService: UsuarioService) {
     this.menuItems = sidebaService.menu;
-    console.log(this.menuItems);
+    //console.log(this.menuItems);
+
+    this.usuario = usuarioService.usuario;
+
    }
 
-  ngOnInit(): void {
-  }
+
 
 }

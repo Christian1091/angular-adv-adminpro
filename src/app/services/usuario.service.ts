@@ -9,6 +9,8 @@ import { environment } from 'src/environments/environment';
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
 
+import { Usuario } from '../models/usuario.model';
+
 // Aqui llamamos al url que creamos en el envairoment
 const base_url = environment.base_url;
 
@@ -21,11 +23,23 @@ export class UsuarioService {
 
   public auth2: any;
 
+  // Creamos una propiedad para almacenar la informacion del usuario
+  public usuario: Usuario;
+
   constructor( private http: HttpClient,
                private router: Router,
                private ngZone: NgZone ) {
 
     this.googleInit();
+  }
+
+  get token(): string {
+    return localStorage.getItem('token') || '';
+  }
+
+  //Creamos un get para el uid del usuario
+  get uid(): string {
+    return this.usuario.uid || '';
   }
 
   googleInit() {
@@ -61,21 +75,26 @@ export class UsuarioService {
 
   /**Para proteger las rutas */
   validarToken(): Observable<boolean> {
-    const token = localStorage.getItem('token') || '';
 
     /**Ahora hacemos la petincion a nuestro backend */
     return this.http.get(`${ base_url }/login/renew`, {
       // Ahora necesito los headers
       headers: {
-        'x-token': token
+        'x-token': this.token
       }
     }).pipe(
-      tap( ( resp: any) => {
-        localStorage.setItem('token', resp.token );
+      map( ( resp: any) => {
+        //console.log(resp);
 
+        // Destructuramos o extraemos las propiedades del objeto usuario
+        const { email, google, nombre, role, img = '', uid } = resp.usuario;
+
+        // Creamos neustra intancia del usuario e inicializamos
+        this.usuario = new Usuario( nombre, email, '', img, google, role, uid);
+        localStorage.setItem('token', resp.token );
+        return true;
       }),
-      // Ahora vamos a transformar a un valor booleano
-      map( resp => true ),
+
       /**El catchError atrapa el error que sucede en todo el flujo
        * del return this.http.get(`${ base_url }/login/renew`
        */
@@ -95,6 +114,26 @@ export class UsuarioService {
                     localStorage.setItem('token', resp.token )
                   })
                 );
+
+  }
+
+  /**Aqui vamos a actualizar el perfil del usuario.
+   * Se puede hacer de esta manera o tambien creando
+   * una interfaz
+  */
+  actulizarPerfil( data: { email: string, nombre: string, role: string }) {
+
+    data = {
+      ...data,
+      role: this.usuario.role
+    };
+
+    return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, {
+      // Ahora necesito los headers
+      headers: {
+        'x-token': this.token
+      }
+    });
 
   }
 

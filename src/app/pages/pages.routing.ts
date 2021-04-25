@@ -11,6 +11,7 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PromesasComponent } from './promesas/promesas.component';
 import { PagesComponent } from './pages.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
+import { PerfilComponent } from './perfil/perfil.component';
 
 const routes: Routes = [
   // Rutas hijas
@@ -21,11 +22,12 @@ const routes: Routes = [
     canActivate: [ AuthGuard ],
     children: [
       { path: '', component: DashboardComponent, data: { titulo: 'Dashboard'} },
-      { path: 'rxjs', component: RxjsComponent, data: { titulo: 'Rxjs'} },
       { path: 'progress', component: ProgressComponent, data: { titulo: 'Progress'} },
       { path: 'grafica1', component: Grafica1Component, data: { titulo: 'Grafica'} },
-      { path: 'promesas', component: PromesasComponent, data: { titulo: 'Promesas'} },
       { path: 'account-settings', component: AccountSettingsComponent, data: { titulo: 'Tema'} },
+      { path: 'promesas', component: PromesasComponent, data: { titulo: 'Promesas'} },
+      { path: 'rxjs', component: RxjsComponent, data: { titulo: 'Rxjs'} },
+      { path: 'perfil', component: PerfilComponent, data: { titulo: 'Perfil de Usuario'} },
 
       // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     ],
