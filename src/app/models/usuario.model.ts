@@ -19,13 +19,11 @@ export class Usuario {
   // Obtener la imagen del usuario
   get imagenUrl() {
     // Para que nos muestre la immagen cuando nos logeamos con google
-    if (this.img.includes('https') ) {
+    if ( !this.img ){
+      return `${ base_url }/upload/usuarios/no-imge`;
+    } else if ( this.img.includes('https') ) {
       return this.img;
-
-    }
-
-    // Vemos si existe imagen el usuario
-    if ( this.img ) {
+    } else if ( this.img ) {// Vemos si existe imagen el usuario
       /**Nos va a retornar un string, este string va a estar
         *basado en el url que tenemos que construir
         */
@@ -33,8 +31,7 @@ export class Usuario {
       return `${ base_url }/upload/usuarios/${ this.img }`;
 
     } else {
-      return `${ base_url }/upload/usuarios/no-imge`;;
-
+      return `${ base_url }/upload/usuarios/no-imge`;
     }
 
   }

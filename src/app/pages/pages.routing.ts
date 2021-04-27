@@ -13,6 +13,9 @@ import { PagesComponent } from './pages.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
 import { PerfilComponent } from './perfil/perfil.component';
 
+// Mantenimientos
+import { UsuariosComponent } from './mantenimientos/usuarios/usuarios.component';
+
 const routes: Routes = [
   // Rutas hijas
   {
@@ -30,6 +33,10 @@ const routes: Routes = [
       { path: 'perfil', component: PerfilComponent, data: { titulo: 'Perfil de Usuario'} },
 
       // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+
+      /**Mantenimientos */
+      { path: 'usuarios', component: UsuariosComponent , data: { titulo: 'Usuario de aplicacion'} },
+
     ],
   },
 ];

@@ -1,13 +1,15 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 import { catchError, map, tap } from 'rxjs/operators'; // Operador que nos permite disparar un efecto secundario
 import { Observable, of } from 'rxjs';
-import { Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
 
-import { RegisterForm } from '../interfaces/register-form.interface';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { RegisterForm } from '../interfaces/register-form.interface';
+import { CargarUsuario } from '../interfaces/cargar-usuarios.interface';
 
 import { Usuario } from '../models/usuario.model';
 
@@ -40,6 +42,18 @@ export class UsuarioService {
   //Creamos un get para el uid del usuario
   get uid(): string {
     return this.usuario.uid || '';
+  }
+
+  /** Como ya estamo copiando mucho este codigo o utilizando
+   * nos creamos un get
+   */
+  get headers() {
+    return {
+       // Ahora necesito los headers
+       headers: {
+        'x-token': this.token
+      }
+    }
   }
 
   googleInit() {
@@ -123,18 +137,12 @@ export class UsuarioService {
   */
   actulizarPerfil( data: { email: string, nombre: string, role: string }) {
 
-    data = {
-      ...data,
-      role: this.usuario.role
-    };
+     data = {
+       ...data,
+       role: this.usuario.role
+     };
 
-    return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, {
-      // Ahora necesito los headers
-      headers: {
-        'x-token': this.token
-      }
-    });
-
+    return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, this.headers); // Ahora necesito los headers
   }
 
   login( formData: LoginForm) {
@@ -165,5 +173,49 @@ export class UsuarioService {
                   })
                 );
 
+  }
+
+  /** Cargar usuarios en la tabla */
+  cargarUsuarios( desde: number = 0) {
+
+    // localhost:3000/api/usuarios?desde=0
+    const url = `${ base_url }/usuarios?desde=${ desde }`;
+
+    // El CargarUsuario lo importamos del interface ya que ahi creamos
+    return this.http.get<CargarUsuario>(url, this.headers)
+              /**Para mostrar la imagen */
+                .pipe(
+                  map( resp => {
+                    /**Vamos a cambiar un arreglo de objetos por uno de usuarios
+                     * el map nos permite transformar el arreglo y transformar a
+                     * uno diferente
+                     */
+                    const usuarios = resp.usuarios.map(
+                        user => new Usuario(user.nombre, user.email, '', user.img, user.google, user.role, user.uid)
+                      );
+
+                      return {
+                        total: resp.total,
+                        usuarios
+                      };
+                  })
+                )
+
+  }
+
+  /**Puedo recibir el usuario o el uid depende de como
+   * nosotros deseemos realizar */
+  eliminarUsuario( usuario: Usuario) {
+    //console.log('eliminando');
+     // http://localhost:3000/api/usuarios/607cbcf1b55f3f2788a34450
+     const url = `${ base_url }/usuarios/${ usuario.uid }`;
+
+     // El CargarUsuario lo importamos del interface ya que ahi creamos
+     return this.http.delete( url, this.headers );
+  }
+
+  /**Para cambiar el rol */
+  guardarUsuario( usuario: Usuario ) {
+    return this.http.put(`${ base_url }/usuarios/${ usuario.uid }`, usuario, this.headers); // Ahora necesito los headers
   }
 }
