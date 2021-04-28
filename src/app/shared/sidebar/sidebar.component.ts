@@ -17,17 +17,13 @@ export class SidebarComponent {
    * en este caso la imagen y el nombre en el html
    */
   public usuario: Usuario;
-  public menuItems: any[];
 
-  constructor( private sidebaService: SidebarService,
+  constructor( public sidebarService: SidebarService,
                private usuarioService: UsuarioService) {
-    this.menuItems = sidebaService.menu;
     //console.log(this.menuItems);
 
     this.usuario = usuarioService.usuario;
 
    }
-
-
 
 }

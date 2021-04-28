@@ -34,6 +34,14 @@ export class BusquedasService {
     );
   }
 
+  /**Metodo para buscar en todo o globalmente */
+  busquedaGlobal( termino: string ) {
+    const url = `${ base_url }/todo/${ termino }`;
+
+    // El CargarUsuario lo importamos del interface ya que ahi creamos
+    return this.http.get(url, this.headers);
+  }
+
   buscar( tipo: 'usuarios', termino: string ) {
 
     const url = `${ base_url }/todo/coleccion/${ tipo }/${ termino }`;

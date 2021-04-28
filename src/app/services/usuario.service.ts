@@ -39,6 +39,10 @@ export class UsuarioService {
     return localStorage.getItem('token') || '';
   }
 
+  get role(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role;
+  }
+
   //Creamos un get para el uid del usuario
   get uid(): string {
     return this.usuario.uid || '';
@@ -72,9 +76,17 @@ export class UsuarioService {
 
   }
 
+  /**Creamos metodo del localstorage para no estar copiando y pegando */
+  guardarLocalStorage( token: string, menu: any ) {
+    localStorage.setItem('token', token );
+    //Menu - el menu pasamos por JSON.stringify para pasarlo a string
+    localStorage.setItem('menu', JSON.stringify( menu ) );
+  }
+
   logout() {
     // Primero vamos a borrar el token
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
 
     this.auth2.signOut().then(() => {
 
@@ -105,8 +117,10 @@ export class UsuarioService {
 
         // Creamos neustra intancia del usuario e inicializamos
         this.usuario = new Usuario( nombre, email, '', img, google, role, uid);
-        localStorage.setItem('token', resp.token );
+
+        this.guardarLocalStorage( resp.token, resp.menu );
         return true;
+
       }),
 
       /**El catchError atrapa el error que sucede en todo el flujo
@@ -125,7 +139,7 @@ export class UsuarioService {
                    * this.http.post(`${ base_url }/login`, formData) */
                   tap( ( resp: any ) => {
                     // Guardar en el localstorage
-                    localStorage.setItem('token', resp.token )
+                    this.guardarLocalStorage( resp.token, resp.menu );
                   })
                 );
 
@@ -154,7 +168,8 @@ export class UsuarioService {
                    * this.http.post(`${ base_url }/login`, formData) */
                   tap( ( resp: any ) => {
                     // Guardar en el localstorage
-                    localStorage.setItem('token', resp.token )
+                    this.guardarLocalStorage( resp.token, resp.menu );
+
                   })
                 );
 
@@ -169,7 +184,8 @@ export class UsuarioService {
                    * this.http.post(`${ base_url }/login`, formData) */
                   tap( ( resp: any ) => {
                     // Guardar en el localstorage
-                    localStorage.setItem('token', resp.token )
+                    this.guardarLocalStorage( resp.token, resp.menu );
+
                   })
                 );
 
